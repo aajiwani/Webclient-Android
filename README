@@ -1,0 +1,18 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+	Project : WebClient for Android
+*/
+
+This project contains WebClient class for Android. This is just to make lives easier while working with Android. You won't have to get through the whole mess of how Http handles the stuff what and how things are returned, i have returned the most common usage things in here. Please do comment about the project and request if you want any thing more in this project.
+
+WebClient works as call back model, when response is completed the call backs would be notified. The call back are added to the instance varialbles simply as Delegates. More detailed info is provide below.
+
+Documentation for the classes in the project :
+
+Class : WebClient				FileName : README_WebClient
+Class : WebClientResponse			FileName : README_WebClientResponse
+
+Note : Be sure to add the required permissions in Android app.
+
+Please do comment about the work, even if you don't like it or any problems in it do report. I would really be thankful to you.

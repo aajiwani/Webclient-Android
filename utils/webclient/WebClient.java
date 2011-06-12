@@ -262,6 +262,8 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		this.postFileParams = new ArrayList<WebClient.FileParameterInfo>();
 		this.isValidRequest = true;
 		this.webClientReponse = new WebClientResponse();
+		this.cookies = new BasicCookieStore();
+		this.headers = new ArrayList<NameValuePair>();
 	}
 
 	public void AddPostParameter(String name, String value)
@@ -310,12 +312,12 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		}
 	}
 
-	public void AddFileParameter(String pathName, byte[] fileBytes, Context context)
+	public void AddFileParameter(String paramName, byte[] fileBytes, Context context)
 	{
-		this.AddFileParameter(pathName, fileBytes, context, null);
+		this.AddFileParameter(paramName, fileBytes, context, null);
 	}
 
-	public void AddFileParameter(String pathName, byte[] fileBytes, Context context, String postFileName)
+	public void AddFileParameter(String paramName, byte[] fileBytes, Context context, String postFileName)
 	{
 		String fileName = UUID.randomUUID().toString();
 		try
@@ -326,7 +328,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 
 			String storedFilePath = this.GeneratePath(context, fileName);
 
-			this.AddFileParameter(pathName, storedFilePath, true, context, postFileName);
+			this.AddFileParameter(paramName, storedFilePath, true, context, postFileName);
 		}
 		catch (Exception e)
 		{
@@ -374,8 +376,6 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 
 	public void AttachCookies(List<Cookie> cookies)
 	{
-		this.cookies = new BasicCookieStore();
-
 		for (Cookie cookie : cookies)
 		{
 			this.cookies.addCookie(cookie);
@@ -384,8 +384,6 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 
 	public void AttachHeaders(List<NameValuePair> headers)
 	{
-		this.headers = new ArrayList<NameValuePair>();
-
 		for (NameValuePair nvp : headers)
 		{
 			this.headers.add(nvp);

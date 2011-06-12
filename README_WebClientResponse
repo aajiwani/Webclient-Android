@@ -1,0 +1,128 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+	Project : WebClient for Android
+*/
+
+Class : WebClientResponse
+Description : This class is for handling the response by the WebClient.
+
+Declaration : public class WebClientResponse
+
+**************************************************************************************************************
+
+Public Enums :
+
+Enum : WebClientCallStatus
+Values : Complete, InProgress, Failed
+Description : Used for maintaining the status of the call by WebClient.
+
+
+**************************************************************************************************************
+
+Public Variables :
+
+Variable : WebClientCallStatus callStatus;
+Description : This variable contains the call status of the WebClient.
+
+
+Variable : int status;
+Description : This variable stores the Http call status, example 200, 404, 301.
+
+
+Variable : HttpUriRequest requestUri;
+Description : The last uri on which the call returned.
+
+
+Variable : HttpHost requestHost;
+Description : The last uris host on which the call returned.
+
+
+Variable : Header[] headers;
+Description : All the headers in response from the server after call returned.
+
+
+Variable : List<Cookie> responseCookies;
+Description : All the cookies in response from the server after call returned. Remember these are "Set-Cookie" headers.
+
+
+Variable : Exception occuredException = null;
+Description : If any exception occured and the call status is Failed, then the exception won't be null, else it would be null.
+
+
+**************************************************************************************************************
+
+Public Methods :
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void SetResponseStream(InputStream input)
+Parameters :
+	InputStream input (the input stream to be recorded as response stream)
+Description :
+	This method is to be used locally in WebClient, while reading response stream from the underlying class.
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public String ReadResposeAsString()
+Returns :
+	String
+Description :
+	This is a handy method, that returns the whole input stream of the WebClient call as string. We need it in many cases.
+Example :
+	public void WebClientLoginCall(WebClientResponse responseObj, Object userState)
+	{
+		try
+		{
+			if (responseObj.callStatus != WebClientCallStatus.Complete)
+			{
+				String response = responseObj.ReadResposeAsString();
+				if (response != null)
+				{
+					// Do something with response
+				}
+			}
+			else
+			{
+				// Error in call
+			}
+		}
+		catch (Exception e)
+		{
+			// Some exception
+		}
+	}
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public InputStream ReadResponseStream()
+Returns :
+	InputStream
+Description :
+	This is a handy method, that returns the whole input stream of the WebClient call as InputStream. We can use all the methods of the class InputStream here.
+Example :
+	public void WebClientLoginCall(WebClientResponse responseObj, Object userState)
+	{
+		try
+		{
+			if (responseObj.callStatus != WebClientCallStatus.Complete)
+			{
+				InputStream response = responseObj.ReadResponseStream();
+				if (response != null)
+				{
+					// Do something with response
+				}
+			}
+			else
+			{
+				// Error in call
+			}
+		}
+		catch (Exception e)
+		{
+			// Some exception
+		}
+	}

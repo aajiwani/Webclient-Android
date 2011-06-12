@@ -1,0 +1,184 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+	Project : WebClient for Android
+	Description : Sample activity running the WebClient
+*/
+
+package com.sample.webclient;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
+
+import utils.webclient.WebClient;
+import utils.webclient.WebClientResponse;
+import utils.webclient.WebClient.RequestType;
+import utils.webclient.WebClientResponse.WebClientCallStatus;
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+
+public class Main extends Activity 
+{
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        
+        WebClient webClient = new WebClient("http://www.abc.com", RequestType.POST);
+        webClient.AddPostParameter("email", "sampleemail@email.com");
+        webClient.AddPostParameter("password", "samplepass");
+        webClient.AddRequestCompleteCallBack("WebClientLoginCallInstance", this.getClass(), this);
+        webClient.AddRequestCompleteCallBack("WebClientLoginCallStatic", this.getClass(), null);
+		
+		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+		nvps.add(new BasicNameValuePair("X-Header-1", "Value of header 1"));
+		nvps.add(new BasicNameValuePair("X-Header-2", "Value of header 2"));
+		webClient.AttachHeaders(nvps);
+		
+		Calendar curr = Calendar.getInstance();
+		curr.add(Calendar.DATE, 3);
+		
+		BasicClientCookie cookie1 = new BasicClientCookie("Cookie1", "CookieValue1");
+		cookie1.setDomain(".abc.com");
+		cookie1.setPath("/");
+		cookie1.setExpiryDate(curr.getTime());
+		
+		BasicClientCookie cookie2 = new BasicClientCookie("Cookie2", "CookieValue2");
+		cookie2.setDomain(".abc.com");
+		cookie2.setPath("/");
+		cookie2.setExpiryDate(curr.getTime());
+		
+		List<Cookie> cookies = new ArrayList<Cookie>();
+		cookies.add(cookie1);
+		cookies.add(cookie2);
+		
+		webClient.AttachCookies(cookies);
+		webClient.AttachCallBackObject("A Sample Call Made By WebClient");
+		
+		webClient.execute(null);
+    }
+    
+    public void WebClientLoginCallInstance(WebClientResponse responseObj, Object userState)
+    {
+    	try
+	{
+    		if (responseObj.callStatus == WebClientCallStatus.Complete)
+    		{
+    			String response = responseObj.ReadResposeAsString();
+    			if (response != null)
+    			{
+    				Log.v("Instance call success", response);
+    				
+    				if (userState != null)
+				{
+					Log.v("Instance call user state", userState.toString());
+    				}
+    			}
+    			else
+    			{
+    				Log.v("Instance call failed", "returned null in response");
+    			}
+    			
+    			if (responseObj.headers != null)
+    	        	{
+    		        	for (Header h : responseObj.headers)
+	    		        {
+    		        		Log.v("Header", h.getName() + "    " + h.getValue());
+    		        	}
+    	        	}
+    	        
+    	        	if (responseObj.responseCookies != null)
+	    	        {
+    		        	for (Cookie c : responseObj.responseCookies)
+	    		        {
+    		        		Log.v("Cookie", c.getName() + "    " + c.getValue());
+    		        	}
+    	        	}
+    		}
+    		else
+    		{
+    			Log.v("Instance call failed", "request wasn't completed");
+    		}
+	}
+	catch (Exception e)
+	{
+		e.printStackTrace();
+		Log.v("Instance call Exception", e.getMessage());
+	}
+    }
+    
+    public static void WebClientLoginCallStatic(WebClientResponse responseObj, Object userState)
+    {
+    	try
+	{
+    		if (responseObj.callStatus == WebClientCallStatus.Complete)
+    		{
+    			InputStream is = responseObj.ReadResponseStream();
+    			
+    			String response = "";
+    			
+    			byte[] data = new byte[256];
+    			int length = 0;
+    	         
+    			StringBuffer buffer = new StringBuffer();
+
+    	        	while((length = is.read(data)) != -1) 
+	    	        {
+    	        		buffer.append(new String(data, 0, length));
+    	        	}
+
+	    	        response = buffer.toString();
+    	        
+    			if (response != null)
+    			{
+    				Log.v("Static call success", response);
+    				
+    				if (userState != null)
+				{
+					Log.v("Static call user state", userState.toString());
+    				}
+    			}
+    			else
+    			{
+    				Log.v("Static call failed", "returned null in response");
+    			}
+    			
+    			if (responseObj.headers != null)
+    	        	{
+    			        for (Header h : responseObj.headers)
+    		        	{
+    		        		Log.v("Header", h.getName() + "    " + h.getValue());
+    		        	}
+    	        	}
+    	        
+    	        	if (responseObj.responseCookies != null)
+    	        	{
+    			        for (Cookie c : responseObj.responseCookies)
+    			        {
+    			        	Log.v("Cookie", c.getName() + "    " + c.getValue());
+    			        }
+    	        	}
+    		}
+    		else
+    		{
+    			Log.v("Static call failed", "request wasn't completed");
+    		}
+	}
+	catch (Exception e)
+	{
+		e.printStackTrace();
+		Log.v("Static call Exception", e.getMessage());
+	}
+    }
+}

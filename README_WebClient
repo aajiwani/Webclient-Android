@@ -1,0 +1,228 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+	Project : WebClient for Android
+*/
+
+Class : WebClient
+Description : This class is the base class to do all the stuff related to web, is a subclass of AsyncTask.
+
+Declaration : public final class WebClient extends AsyncTask<Void, Void, Void>
+
+**************************************************************************************************************
+
+Public Enums :
+
+Enum : RequestType
+Values : GET, POST
+Description : Used while instantiating a WebClient for a web request.
+Example :
+
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+
+**************************************************************************************************************
+
+Public Methods :
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public WebClient(String url, RequestType type)
+Parameters :
+	String url (the url that needs to be fetched)
+	RequestType type (the request type of the web request)
+Description :
+	This is the contructor of the class.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddPostParameter(String name, String value)
+Parameters :
+	String name (the name of the parameter to post)
+	String value (the value of the parameter to post)
+Description :
+	This method adds a simple post parameter to the request, not for file there is another method for that.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	webClient.AddPostParameter("someKey", "someValue");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, String filePath)
+Parameters :
+	String paramName (the name of the parameter to post)
+	String filePath (the file path to post)
+Description :
+	This method adds a file parameter to the request, with default file name as located on the client's device.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	webClient.AddFileParameter("someKey", "/var/myfile");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, String filePath, String postFileName)
+Parameters :
+	String paramName (the name of the parameter to post)
+	String filePath (the file path to post)
+	String postFileName (the name of the file with which to post the file)
+Description :
+	This method adds a file parameter to the request, with custom file name as the third parameter of the method.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	webClient.AddFileParameter("someKey", "/var/myfile", "myOwnFile.txt");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, InputStream fileStream, Context context)
+Parameters :
+	String paramName (the name of the parameter to post)
+	InputStream fileStream (the input stream to post as a file)
+	Context context (the context in which to create a temporary file)
+Description :
+	This method adds a file parameter to the request. (Note this function would require a temporary storage equal to the length of your input stream in your context, although it would be removed as soon as the request is completed).
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	InputStream inputStream; /* Instantiate any input stream */
+	webClient.AddFileParameter("someKey", inputStream, this);
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, InputStream fileStream, Context context, String postFileName)
+Parameters :
+	String paramName (the name of the parameter to post)
+	InputStream fileStream (the input stream to post as a file)
+	Context context (the context in which to create a temporary file)
+	String postFileName (the name of the file with which to post the file)
+Description :
+	Same as the above method, with an additional parameter to send the file with the custom name.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	InputStream inputStream; /* Instantiate any input stream */
+	webClient.AddFileParameter("someKey", inputStream, this, "myOwnFile.txt");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, byte[] fileBytes, Context context)
+Parameters :
+	String paramName (the name of the parameter to post)
+	byte[] fileBytes (the array of bytes to post as a file)
+	Context context (the context in which to create a temporary file)
+Description :
+	This method adds a file parameter to the request. (Note this function would require a temporary storage equal to the length of your input file bytes in your context, although it would be removed as soon as the request is completed).
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	String tempStr = "Some file contents";
+	webClient.AddFileParameter("someKey", tempStr.getBytes(), this);
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddFileParameter(String paramName, byte[] fileBytes, Context context, String postFileName)
+Parameters :
+	String paramName (the name of the parameter to post)
+	byte[] fileBytes (the array of bytes to post as a file)
+	Context context (the context in which to create a temporary file)
+	String postFileName (the name of the file with which to post the file)
+Description :
+	Same as the above method, with an additional parameter to send the file with the custom name.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.POST);
+	String tempStr = "Some file contents";
+	webClient.AddFileParameter("someKey", tempStr.getBytes(), this, "myOwnFile.txt");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AddRequestCompleteCallBack(String callBack, Class<?> reciever, Object recieverInstance)
+Parameters :
+	String callBack (the name of the method as a string, of a class to call after request is completed)
+	Class<?> reciever (the class that contains that method)
+	Object recieverInstance (the instance of the class if callBack is an instance method, null if callBack is static method)
+Description :
+	This methods adds a call back for on complete event. When the call would be completed (success or failure), all of the added methods will be called.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+	webClient.AddRequestCompleteCallBack("WebClientLoginCall", this.getClass(), this);	// In case of the instance method
+	webClient.AddRequestCompleteCallBack("WebClientLoginCall2", this.getClass(), null);	// In case of the static method
+Notes :
+	The method must have these signature to be called.
+	public void WebClientLoginCall(WebClientResponse responseObj, Object userState);
+	Whenever the method would be called 2 parameters would be recieved, WebClientResponse and Object
+	userState would be null if not attached via WebClient.AttachCallBackObject.
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AttachCallBackObject(Object userState)
+Parameters :
+	Object userState (any object that will be available on the complete call back)
+Description :
+	This method will save the userState in the instance and will send that object on each request completed call back added via WebClient.AddRequestCompleteCallBack.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+	webClient.AddRequestCompleteCallBack("WebClientLoginCall", this.getClass(), this);
+	webClient.AttachCallBackObject("A test string");
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	public void AttachCookies(List<Cookie> cookies)
+Parameters :
+	List<Cookie> cookies (all cookies that are to be added in the request)
+Description :
+	This method will add the list of cookies to the request made.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+	BasicClientCookie cookie1 = new BasicClientCookie("Cookie1", "CookieValue1");
+	cookie1.setDomain(".xyz.com");
+	cookie1.setPath("/");
+	cookie1.setExpiryDate(curr.getTime());
+
+	BasicClientCookie cookie2 = new BasicClientCookie("Cookie2", "CookieValue2");
+	cookie1.setDomain(".xyz.com");
+	cookie2.setPath("/");
+	cookie2.setExpiryDate(curr.getTime());
+
+	List<Cookie> cookies = new ArrayList<Cookie>();
+	cookies.add(cookie1);
+	cookies.add(cookie2);
+
+	webClient.AttachCookies(cookies);
+
+**************************************************************************************************************
+
+Protected Methods :
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	protected Void doInBackground(Void... params)
+Description :
+	The magic method, that makes the actual request. Its an overrided method, from class AsyncTask. We don't have to call this method, its automatically called when we issue execute command through our instance variable.
+Example :
+	WebClient webClient = new WebClient("http://www.xyz.com", WebClient.RequestType.GET);
+	webClient.execute(null);
+
+
+
+--------------------------------------------------------------------------------------------------------------
+Method :
+	protected void onPostExecute(Void result)
+Description :
+	Another magic method, that is called right after the doInBackground is completed. This method is also an overrided method of class AsyncTask. It further calls all the call backs that were registered through WebClient.AddRequestCompleteCallBack

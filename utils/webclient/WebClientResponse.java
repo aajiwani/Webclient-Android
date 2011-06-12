@@ -27,7 +27,6 @@ public class WebClientResponse
 	private ByteArrayOutputStream copyOfStream = null;
 	private boolean isReponseAvailable = false;
 
-	public String response;
 	public WebClientCallStatus callStatus;
 	public int status;
 	public HttpUriRequest requestUri;
