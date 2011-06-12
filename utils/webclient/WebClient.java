@@ -1,3 +1,8 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+*/
+
 package utils.webclient;
 
 import java.io.File;
@@ -54,7 +59,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		GET,
 		POST
 	}
-	
+
 	private class CallbackReciever
 	{
 		@SuppressWarnings("unused")
@@ -63,7 +68,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		public Method CallbackMethod;
 		public Object RecieverInstance;
 	}
-	
+
 	private class FileParameterInfo
 	{
 		public String ParamName;
@@ -71,7 +76,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		public boolean ShouldDelete;
 		public Context contextOfFile;
 		public String PostFileName;
-		
+
 		public FileParameterInfo(String paramName, String filePath, boolean toBeDeleted, Context context, String postFileName)
 		{
 			this.ParamName = paramName;
@@ -81,7 +86,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.PostFileName = postFileName;
 		}
 	}
-	
+
 	private String url;
 	private List<NameValuePair> postDataParams;
 	private List<FileParameterInfo> postFileParams;
@@ -97,18 +102,18 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 	private boolean isCookiesAttached = false;
 	private boolean isHeadersAttached = false;
 	private HttpContext httpCallContext = null;
-	
+
 	private HttpEntity GetRequestEntity()
 	{
 		HttpEntity entity = null;
-		
+
 		try
 		{
 			if (this.postFileParams.size() > 0)
 			{
 				entity = new MultipartEntity();
 				MultipartEntity fileEntity = (MultipartEntity)entity;
-				
+
 				for (int i = 0; i < this.postFileParams.size(); i++)
 				{
 					if (this.postFileParams.get(i).PostFileName != null)
@@ -122,11 +127,11 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 					}
 				}
 			}
-			
+
 			if (entity != null)
 			{
 				MultipartEntity fileEntity = (MultipartEntity)entity;
-				
+
 				if (this.postDataParams.size() > 0)
 				{
 					for (int i = 0; i < this.postDataParams.size(); i++)
@@ -145,10 +150,10 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.webClientReponse.occuredException = e;
 			this.isValidRequest = false;
 		}
-		
+
 		return entity;
 	}
-	
+
 	private void RemoveTemperaryFiles()
 	{
 		try
@@ -164,20 +169,20 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		}
 		catch (Exception e)
 		{
-			
+
 		}
-	}	
+	}
 
 	private String GeneratePath(Context context, String fileName)
 	{
 		return context.getFilesDir().getAbsolutePath() + "/" + fileName;
 	}
-	
+
 	private void AddFileParameter(String name, String filePath, boolean shouldDelete, Context context, String postFileName)
 	{
 		this.postFileParams.add(new FileParameterInfo(name, filePath, shouldDelete, context, postFileName));
 	}
-	
+
 	private void InitializeHttpClient()
 	{
 		try
@@ -186,16 +191,16 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			HttpParams params = new BasicHttpParams();
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, "utf-8");
-			
+
 			params.setBooleanParameter("http.protocol.expect-continue", false);
-		
+
 			//REGISTERS SCHEMES FOR BOTH HTTP AND HTTPS
 			SchemeRegistry schemeRegistry = new SchemeRegistry();
 			schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 			schemeRegistry.register(new Scheme("https", new WebClientSSLSocketFactory(), 443));
-	           
+
 	        ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, schemeRegistry);
-			 
+
 	        this.httpClient = new DefaultHttpClient(manager, params);
 	        this.httpCallContext = new BasicHttpContext();
 	        this.isHttpClientInitialized = true;
@@ -206,13 +211,13 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.webClientReponse.occuredException = e;
 		}
 	}
-	
+
 	private void AttachCookies()
 	{
 		try
 		{
 			this.httpCallContext.setAttribute(ClientContext.COOKIE_STORE, this.cookies);
-			
+
 			this.isCookiesAttached = true;
 		}
 		catch (Exception e)
@@ -221,25 +226,25 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.webClientReponse.occuredException = e;
 		}
 	}
-	
+
 	private void AttachHeaders()
 	{
 		try
 		{
 			final ArrayList<NameValuePair> localHeaders = this.headers;
-			
+
 			((AbstractHttpClient) this.httpClient).addRequestInterceptor(new HttpRequestInterceptor()
-			{   
+			{
 				public void process(HttpRequest request, HttpContext context) throws HttpException, IOException
 				{
 					for (int i = 0; i < localHeaders.size(); i++)
 					{
 						request.addHeader(localHeaders.get(i).getName(), localHeaders.get(i).getValue());
-						
+
 					}
 				}
 			});
-			
+
 			this.isHeadersAttached = true;
 		}
 		catch (Exception e)
@@ -248,7 +253,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.isValidRequest = false;
 		}
 	}
-	
+
 	public WebClient(String url, RequestType type)
 	{
 		this.url = url;
@@ -263,22 +268,22 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 	{
 		this.postDataParams.add(new BasicNameValuePair(name, value));
 	}
-	
+
 	public void AddFileParameter(String paramName, String filePath)
 	{
 		this.AddFileParameter(paramName, filePath, false, null, null);
 	}
-	
+
 	public void AddFileParameter(String paramName, String filePath, String postFileName)
 	{
 		this.AddFileParameter(paramName, filePath, false, null, postFileName);
 	}
-	
+
 	public void AddFileParameter(String paramName, InputStream fileStream, Context context)
 	{
 		this.AddFileParameter(paramName, fileStream, context, null);
 	}
-	
+
 	public void AddFileParameter(String paramName, InputStream fileStream, Context context, String postFileName)
 	{
 		String fileName = UUID.randomUUID().toString();
@@ -286,16 +291,16 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		{
 			FileOutputStream stream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 			byte[] buffer = new byte[1024];
-			
+
 			while (fileStream.read(buffer) != -1)
 			{
 				stream.write(buffer);
 			}
-			
+
 			stream.close();
-			
+
 			String storedFilePath = this.GeneratePath(context, fileName);
-			
+
 			this.AddFileParameter(paramName, storedFilePath, true, context, postFileName);
 		}
 		catch (Exception e)
@@ -304,12 +309,12 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.webClientReponse.occuredException = e;
 		}
 	}
-	
+
 	public void AddFileParameter(String pathName, byte[] fileBytes, Context context)
 	{
 		this.AddFileParameter(pathName, fileBytes, context, null);
 	}
-	
+
 	public void AddFileParameter(String pathName, byte[] fileBytes, Context context, String postFileName)
 	{
 		String fileName = UUID.randomUUID().toString();
@@ -318,9 +323,9 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			FileOutputStream stream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 			stream.write(fileBytes);
 			stream.close();
-			
+
 			String storedFilePath = this.GeneratePath(context, fileName);
-			
+
 			this.AddFileParameter(pathName, storedFilePath, true, context, postFileName);
 		}
 		catch (Exception e)
@@ -329,7 +334,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			this.webClientReponse.occuredException = e;
 		}
 	}
-	
+
 	public void AddRequestCompleteCallBack(String callBack, Class<?> reciever, Object recieverInstance)
 	{
 		try
@@ -347,7 +352,7 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 				rec.RecieverInstance = null;
 			}
 			rec.CallbackMethod = reciever.getMethod(callBack, WebClientResponse.class, Object.class);
-			
+
 			this.reqCompleteCallbacks.add(rec);
 		}
 		catch (NoSuchMethodException exp)
@@ -366,69 +371,69 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 	{
 		this.userState = userState;
 	}
-	
+
 	public void AttachCookies(List<Cookie> cookies)
 	{
 		this.cookies = new BasicCookieStore();
-		
+
 		for (Cookie cookie : cookies)
 		{
 			this.cookies.addCookie(cookie);
 		}
 	}
-	
+
 	public void AttachHeaders(List<NameValuePair> headers)
 	{
 		this.headers = new ArrayList<NameValuePair>();
-		
+
 		for (NameValuePair nvp : headers)
 		{
 			this.headers.add(nvp);
 		}
 	}
-	
+
 	@Override
 	protected Void doInBackground(Void... params)
 	{
 		if (!this.isValidRequest)
 			return null;
-		
+
 		this.webClientReponse.callStatus = WebClientCallStatus.InProgress;
-		
+
 		this.InitializeHttpClient();
-		
+
 		if (!(isValidRequest && this.isHttpClientInitialized))
 		{
 			this.isValidRequest = false;
 			return null;
 		}
-		
+
 		if (this.headers != null)
 		{
 			this.AttachHeaders();
-			
+
 			if (!(isValidRequest && this.isHeadersAttached))
 			{
 				this.isValidRequest = false;
 				return null;
 			}
 		}
-		
+
 		if (this.cookies != null)
 		{
 			this.AttachCookies();
-			
+
 			if (!(isValidRequest && this.isCookiesAttached))
 			{
 				this.isValidRequest = false;
 				return null;
 			}
 		}
-		
+
 		HttpResponse httpReponse = null;
 		HttpPost httpPost = null;
 		HttpGet httpGet = null;
-		
+
 		try
 		{
 			if (this.reqType == RequestType.GET)
@@ -453,9 +458,9 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			}
 		}
 		catch (Exception e)
-		{			
+		{
 			this.webClientReponse.callStatus = WebClientCallStatus.Failed;
-			
+
 			if (this.reqType == RequestType.GET)
 			{
 				httpGet.abort();
@@ -464,39 +469,39 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 			{
 				httpPost.abort();
 			}
-			
-			if((this.httpClient instanceof DefaultHttpClient)) 
-            { 
+
+			if((this.httpClient instanceof DefaultHttpClient))
+            {
 				this.httpClient.getConnectionManager().shutdown();
             }
-			
+
 			this.isValidRequest = false;
 			this.webClientReponse.occuredException = e;
 		}
-	    
+
 	    if (!(this.webClientReponse.callStatus == WebClientCallStatus.Failed))
-	    {	
+	    {
 		    try
 		    {
 		    	this.webClientReponse.status = httpReponse.getStatusLine().getStatusCode();
 		    	this.webClientReponse.headers = httpReponse.getAllHeaders();
-		    	
+
 		    	WebClientCookieExtractor extractor = new WebClientCookieExtractor();
 		    	this.webClientReponse.responseCookies = extractor.GetCookies(this.webClientReponse.headers);
-		    	
-		    	this.webClientReponse.requestUri = (HttpUriRequest) this.httpCallContext.getAttribute(ExecutionContext.HTTP_REQUEST); 
+
+		    	this.webClientReponse.requestUri = (HttpUriRequest) this.httpCallContext.getAttribute(ExecutionContext.HTTP_REQUEST);
 		    	this.webClientReponse.requestHost = (HttpHost) this.httpCallContext.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-		    	
+
 		    	HttpEntity getResEntity = httpReponse.getEntity();
-		    	
-		        if(getResEntity != null) 
+
+		        if(getResEntity != null)
 		        {
 		        	InputStream input = getResEntity.getContent();
 		        	this.webClientReponse.SetResponseStream(input);
-		        	
+
 		        	input.close();
 	            }
-		        
+
 		        this.webClientReponse.callStatus = WebClientCallStatus.Complete;
 		    }
 		    catch (Exception e)
@@ -504,24 +509,24 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 		    	this.webClientReponse.occuredException = e;
 		    	this.isValidRequest = false;
 		    	this.webClientReponse.callStatus = WebClientCallStatus.Failed;
-		    }	        
-			finally 
+		    }
+			finally
 			{
-				if((this.httpClient instanceof DefaultHttpClient)) 
-	            { 
+				if((this.httpClient instanceof DefaultHttpClient))
+	            {
 					this.httpClient.getConnectionManager().shutdown();
 	            }
 	        }
 	    }
 	    return null;
 	}
-	
+
 	@Override
 	protected void onPostExecute(Void result)
 	{
 		// TODO Auto-generated method stub
-		super.onPostExecute(result); 
-		
+		super.onPostExecute(result);
+
 		if (this.reqCompleteCallbacks.size() > 0)
 		{
 			for (int i = 0; i < this.reqCompleteCallbacks.size(); i++)
@@ -539,11 +544,11 @@ public final class WebClient extends AsyncTask<Void, Void, Void>
 				}
 				catch (Exception e)
 				{
-					
+
 				}
 			}
 		}
-		
+
 		this.RemoveTemperaryFiles();
 	}
 }

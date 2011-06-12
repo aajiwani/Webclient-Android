@@ -1,3 +1,8 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+*/
+
 package utils.webclient;
 
 import java.io.ByteArrayInputStream;
@@ -18,10 +23,10 @@ public class WebClientResponse
 		InProgress,
 		Failed
 	}
-	
+
 	private ByteArrayOutputStream copyOfStream = null;
 	private boolean isReponseAvailable = false;
-	
+
 	public String response;
 	public WebClientCallStatus callStatus;
 	public int status;
@@ -30,7 +35,7 @@ public class WebClientResponse
 	public Header[] headers;
 	public List<Cookie> responseCookies;
 	public Exception occuredException = null;
-	
+
 	public void SetResponseStream(InputStream input)
 	{
 		try
@@ -38,20 +43,20 @@ public class WebClientResponse
 			if (this.copyOfStream == null)
 			{
 				this.copyOfStream = new ByteArrayOutputStream();
-				
+
 				int read = 0;
 				int chunk = 0;
 				byte[] data = new byte[256];
-				
+
 				while(-1 != (chunk = input.read(data)))
 				{
 					read += data.length;
 					this.copyOfStream.write(data, 0, chunk);
 				}
-				
+
 				this.copyOfStream.flush();
 				this.copyOfStream.close();
-				
+
 				this.isReponseAvailable = true;
 			}
 		}
@@ -60,7 +65,7 @@ public class WebClientResponse
 			this.occuredException = e;
 		}
 	}
-	
+
 	public String ReadResposeAsString()
 	{
 		if (this.isReponseAvailable)
@@ -72,7 +77,7 @@ public class WebClientResponse
 			return null;
 		}
 	}
-	
+
 	public InputStream ReadResponseStream()
 	{
 		if (this.isReponseAvailable)

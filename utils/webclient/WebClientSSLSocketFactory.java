@@ -1,3 +1,8 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+*/
+
 package utils.webclient;
 
 import java.io.IOException;
@@ -25,7 +30,7 @@ import org.apache.http.params.HttpParams;
 public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFactory
 {
 	private static SSLContext sc = null;
-	
+
 	// always verify the host - dont check for certificate
 	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier()
 	{
@@ -34,7 +39,7 @@ public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFa
 	                return true;
 	        }
 	};
-	
+
 	// Create a trust manager that does not validate certificate chains
     static TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
     {
@@ -51,15 +56,15 @@ public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFa
         {
         }
     } };
-	
+
 	private static SSLContext createEasySSLContext() throws IOException
 	{
-		try 
+		try
 		{
 	        sc = SSLContext.getInstance("TLS");
 	        sc.init(null, trustAllCerts, null);
 	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	        
+
 	        return sc;
 		}
 		catch (Exception e)
@@ -68,7 +73,7 @@ public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFa
 			return null;
 		}
 	}
-	
+
 	private SSLContext getSSLContext() throws IOException
 	{
         if (sc == null)
@@ -77,7 +82,7 @@ public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFa
         }
         return sc;
 	}
-	
+
 	/**
      * @see org.apache.http.conn.scheme.SocketFactory#connectSocket(java.net.Socket,
      *      java.lang.String, int, java.net.InetAddress, int,
@@ -117,17 +122,17 @@ public class WebClientSSLSocketFactory implements SocketFactory, LayeredSocketFa
 		// TODO Auto-generated method stub
 		return getSSLContext().getSocketFactory().createSocket();
 	}
-	
+
 	public boolean isSecure(Socket sock) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
+
 	public boolean equals(Object obj) {
         return ((obj != null) && obj.getClass().equals(
         		WebClientSSLSocketFactory.class));
 	}
-	
+
 	public int hashCode() {
 	        return WebClientSSLSocketFactory.class.hashCode();
 	}

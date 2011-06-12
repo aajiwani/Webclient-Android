@@ -1,3 +1,8 @@
+/*
+	Author : Amir Ali Jiwani
+	Email : amir.ali@pi-labs.net
+*/
+
 package utils.webclient;
 
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ public class WebClientCookieExtractor
 	public List<Cookie> GetCookies(Header[] allHeaders)
 	{
 		List<Cookie> cookieList = new ArrayList<Cookie>();
-		
+
 		for (Header h : allHeaders)
 		{
 			try
@@ -27,22 +32,22 @@ public class WebClientCookieExtractor
 			{
 			}
 		}
-		
+
 		return cookieList;
 	}
-	
+
 	private BasicClientCookie ExtractCookie(Header cookieHeader) throws Exception
 	{
 		if (cookieHeader.getName().toLowerCase().compareTo("set-cookie") == 0)
 		{
 			String[] cookieKeyPairs = cookieHeader.getValue().split(";");
 			BasicClientCookie cookie = null;
-			
+
 			for (String cookieKeyPair : cookieKeyPairs)
 			{
 				int equalToIndex = cookieKeyPair.indexOf("=");
 				String[] keyValue = null;
-				
+
 				if (equalToIndex == -1)
 				{
 					keyValue = new String[1];
@@ -54,7 +59,7 @@ public class WebClientCookieExtractor
 					keyValue[0] = cookieKeyPair.substring(0, equalToIndex).trim();
 					keyValue[1] = cookieKeyPair.substring(equalToIndex + 1);
 				}
-				
+
 				if (keyValue.length == 2)
 				{
 					if (keyValue[0].toLowerCase().compareTo(BasicClientCookie.DOMAIN_ATTR) == 0)
@@ -96,7 +101,7 @@ public class WebClientCookieExtractor
 					}
 				}
 			}
-			
+
 			return cookie;
 		}
 		else
